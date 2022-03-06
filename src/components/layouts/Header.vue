@@ -29,7 +29,7 @@
       >
         <v-list color="transparent">
           <v-list-item
-            v-for="(item, i) in items"
+            v-for="(item, i) in fetchItems"
             :key="i"
           >
             <router-link
@@ -53,34 +53,65 @@
     </v-layout>
   </v-card>
 </template>
-<script>
-export default {
-  data: () => ({
-    drawer: false,
-    group: null,
-    items: [
+<script lang="ts">
+import { defineComponent, ref, watch, computed } from 'vue'
+import { useStore } from '@/store/index'
+import { AuthStatusType } from '../../../constants/index'
+
+export default defineComponent({
+  setup () {
+    const store = useStore()
+    const drawer = ref<boolean>(false)
+    const group = ref<any>(null)
+    const items = [
       {
         icon: 'mdi-view-dashboard',
         value: 'Dashboard',
-        link: '/'
+        link: '/',
+        authStatus: AuthStatusType.ACCESSABLE
       },
       {
         icon: 'mdi-phone',
         value: 'Meet',
-        link: '/meet'
+        link: '/meet',
+        authStatus: AuthStatusType.AUTHENTICATED
       },
       {
         icon: 'mdi-login-variant',
         value: 'Login',
-        link: '/login'
+        link: '/login',
+        authStatus: AuthStatusType.UN_AUTHENTICATED
+      },
+      {
+        icon: 'mdi-account-plus',
+        value: 'SignUp',
+        link: '/sign_up',
+        authStatus: AuthStatusType.UN_AUTHENTICATED
+      },
+      {
+        icon: 'mdi-logout-variant',
+        value: 'Logout',
+        link: '/logout',
+        authStatus: AuthStatusType.AUTHENTICATED
       }
     ]
-  }),
+    watch(group, () => {
+      drawer.value = !drawer.value
+    })
 
-  watch: {
-    group () {
-      this.drawer = false
+    const fetchItems = computed(() => {
+      return items.filter(function (i) {
+        return i.authStatus === AuthStatusType.ACCESSABLE ||
+          (store.state.user.id === 0 && i.authStatus === AuthStatusType.UN_AUTHENTICATED) ||
+          (store.state.user.id !== 0 && i.authStatus === AuthStatusType.AUTHENTICATED)
+      })
+    })
+
+    return {
+      drawer,
+      group,
+      fetchItems
     }
   }
-}
+})
 </script>
