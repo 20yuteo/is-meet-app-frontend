@@ -2,6 +2,10 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import Home from '../views/Home.vue'
 import Meet from '../views/Meet.vue'
 import Login from '../views/Login.vue'
+import SignUp from '../views/SignUp.vue'
+import EmailVerify from '../views/EmailVerify.vue'
+import SendEmail from '../views/SendEmail.vue'
+import Logout from '../views/Logout.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -20,12 +24,38 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/meet',
     name: 'Meet',
-    component: Meet
+    component: Meet,
+    meta: {
+      requiresAuth: true
+    }
   },
   {
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/sign_up',
+    name: 'SignUp',
+    component: SignUp
+  },
+  {
+    path: '/email_verify',
+    name: 'EmailVerify',
+    component: EmailVerify
+  },
+  {
+    path: '/send_email',
+    name: 'SendEmail',
+    component: SendEmail
+  },
+  {
+    path: '/logout',
+    name: 'Logout',
+    component: Logout,
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 
