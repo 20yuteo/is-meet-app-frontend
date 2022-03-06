@@ -17,7 +17,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue'
+import { defineComponent } from 'vue'
 import Peer, { SfuRoom } from 'skyway-js'
 import { SkywayMediaStream } from '../../types/SkywayMediaStream'
 
