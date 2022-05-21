@@ -1,83 +1,110 @@
 <template>
-  <v-row
-    justify="center"
-    align="center"
+  <div
+    class="skyway-video d-flex align-start flex-column mb-6 justify-end"
   >
-    <div class="skyway-video">
+    <div
+      id="remote-streams"
+      class="remote-streams"
+    >
       <div
-        id="remote-streams"
-        class="remote-streams"
+        class="video_wrapper"
+        v-for="remoteStream in remoteStreams"
+        :ref="remoteStream.peerId"
+        :key="remoteStream.peerId"
       >
-        <div
-          class="video_wrapper"
-          v-for="remoteStream in remoteStreams"
-          :ref="remoteStream.peerId"
-          :key="remoteStream.peerId"
+        <audio autoplay :srcObject.prop="remoteStream" playsinline></audio>
+        <v-row
+          justify="center"
+          align-content="center"
         >
-          <audio autoplay :srcObject.prop="remoteStream" playsinline></audio>
-          <v-row
-            class="justify-center"
+          <v-col
+            xs="12"
+            sm="8"
+            md="8"
+            lg="6"
+            xl="6"
           >
             <v-card
-              width="240px"
-              class="py-8 ma-8"
+              class="pa-8 ma-8"
             >
               <div>
                 <v-row
-                  class="justify-center"
+                  align="center"
+                  class="spacer"
+                  no-gutters
                 >
-                  <v-avatar>
-                    <img
-                      src="https://cdn.vuetifyjs.com/images/john.jpg"
-                      alt="John"
-                    >
-                  </v-avatar>
+                  <v-col
+                    cols="6"
+                  >
+                    <v-avatar>
+                      <v-icon dark>
+                        mdi-account-circle
+                      </v-icon>
+                    </v-avatar>
+                  </v-col>
+                  <v-col
+                    class="hidden-xs-only text-h5"
+                    cols="6"
+                  >
+                    <strong>
+                      {{ remoteStream.peerId }}
+                    </strong>
+                  </v-col>
                 </v-row>
               </div>
             </v-card>
-          </v-row>
-        </div>
-        <v-row
-          class="justify-center"
-        >
-          <v-card
-            width="240px"
-            class="py-8 ma-8"
-          >
-            <div>
-              <audio id="local-stream"></audio>
-              <v-row
-                class="justify-center"
-              >
-                <div
-                  class="pa-2"
-                >
-                  <v-btn
-                    color="primary"
-                    class="white--text"
-                    @click="mute"
-                  >
-                    {{ muteText }}
-                  </v-btn>
-                </div>
-                <div
-                  class="pa-2"
-                >
-                  <v-btn
-                    color="error"
-                    class="white--text"
-                    @click="disconnect"
-                  >
-                    切断
-                  </v-btn>
-                </div>
-              </v-row>
-            </div>
-          </v-card>
+          </v-col>
         </v-row>
       </div>
     </div>
-  </v-row>
+    <v-row
+      class="local-stream"
+      justify="center"
+      align-content="center"
+    >
+      <v-col
+        xs="12"
+        sm="8"
+        md="8"
+        lg="6"
+        xl="6"
+      >
+        <v-card
+          class="py-8 ma-8"
+        >
+          <div>
+            <audio id="local-stream"></audio>
+            <v-row
+              class="justify-center"
+            >
+              <div
+                class="pa-2"
+              >
+                <v-btn
+                  color="primary"
+                  class="white--text"
+                  @click="mute"
+                >
+                  {{ muteText }}
+                </v-btn>
+              </div>
+              <div
+                class="pa-2"
+              >
+                <v-btn
+                  color="error"
+                  class="white--text"
+                  @click="disconnect"
+                >
+                  切断
+                </v-btn>
+              </div>
+            </v-row>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 <script lang="ts">
 import { defineComponent, nextTick, ref, computed, onMounted } from 'vue'
@@ -116,7 +143,9 @@ export default defineComponent({
     }
   },
 
-  setup (props) {
+  emits: ['disconnect'],
+
+  setup (props, { emit }) {
     const peer = ref<Peer | null>(null)
 
     const room = ref<SfuRoom | null>(null)
@@ -181,6 +210,7 @@ export default defineComponent({
     const disconnect = (): void => {
       if (room.value) {
         room.value.close()
+        emit('disconnect')
       }
     }
 
@@ -200,7 +230,7 @@ export default defineComponent({
 
         await localVideo.play()
 
-        peer.value = await new Peer(props.userId, {
+        peer.value = await new Peer(props.userName, {
           key: 'ef2b5f2e-5575-49e5-9a34-0756bb8a90ac' || '',
           debug: 3
         })
@@ -226,20 +256,14 @@ export default defineComponent({
   }
 })
 </script>
-// <style lang="scss" scoped>
-// .video_wrapper {
-//     position: relative;
-//     width: 90vw;
-//     height: 80vh;
-//     overflow: hidden;
-// }
-
-// .video_wrapper > video {
-//     position: absolute;
-//     top: 50%;
-//     left: 50%;
-//     transform: translateX(-50%) translateY(-50%);
-//     min-width: 80%;
-//     min-height: 80%;
-// }
-// </style>
+<style lang="scss" scoped>
+.skyway-video {
+  height: 100%;
+}
+.remote-streams {
+  width: 100%;
+}
+.local-stream {
+  width: 100%;
+}
+</style>

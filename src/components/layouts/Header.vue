@@ -71,9 +71,15 @@ export default defineComponent({
         authStatus: AuthStatusType.ACCESSABLE
       },
       {
-        icon: 'mdi-phone',
-        value: 'Meet',
-        link: '/meet',
+        icon: 'mdi-account-group-outline',
+        value: 'Meets',
+        link: '/meets',
+        authStatus: AuthStatusType.AUTHENTICATED
+      },
+      {
+        icon: 'mdi-card-account-details-outline',
+        value: 'Profile',
+        link: '/profile',
         authStatus: AuthStatusType.AUTHENTICATED
       },
       {

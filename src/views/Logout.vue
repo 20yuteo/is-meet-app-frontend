@@ -21,8 +21,13 @@ import { RepositoryFactory } from '@/Repositories/RepositoryFactory'
 import { useStore } from '@/store/index'
 import * as MutationTypes from '@/store/mutationType'
 import { useRouter } from 'vue-router'
+import useErrorHandling from '@/Repositories/ErrorHandling'
+
+const CsrfRepository = RepositoryFactory.get('csrf')
 
 const LogoutRepository = RepositoryFactory.get('logout')
+
+const { errorHandling } = useErrorHandling()
 
 export default defineComponent({
   setup () {
@@ -41,14 +46,12 @@ export default defineComponent({
         store.commit(MutationTypes.ADD_USER, {
           id: 0,
           email: '',
-          name: ''
+          name: '',
+          isLogin: false
         })
-        router.push('/')
+        router.push('/meets')
       } catch (error: any) {
-        store.commit(MutationTypes.ADD_ALERT, {
-          hasAlert: true,
-          AlertMessage: error.message
-        })
+        errorHandling(error, store, router)
       } finally {
         store.commit(MutationTypes.SHOW_LOADER, {
           isLoading: false

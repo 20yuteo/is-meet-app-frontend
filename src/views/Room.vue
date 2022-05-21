@@ -4,6 +4,7 @@
     :user-id="userId"
     :user-name="userName"
     :token="token"
+    @disconnect="disconnect"
   >
   </skyway-video>
 </template>
@@ -12,7 +13,7 @@ import { defineComponent, onBeforeMount, ref } from 'vue'
 import VideoRoom from '@/components/VideoRoom.vue'
 import SkywayVideo from '@/components/SkywayVideo.vue'
 import { useStore } from '@/store/index'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 export default defineComponent({
   name: 'Room',
@@ -26,6 +27,8 @@ export default defineComponent({
 
     const route = useRoute()
 
+    const router = useRouter()
+
     const roomName = ref<string>('')
 
     const userName = ref<string>('')
@@ -33,6 +36,10 @@ export default defineComponent({
     const userId = ref<string>('')
 
     const token = ref<string>('')
+
+    const disconnect = () => {
+      router.push('/meets')
+    }
 
     onBeforeMount(async () => {
       if (route.query === undefined) return

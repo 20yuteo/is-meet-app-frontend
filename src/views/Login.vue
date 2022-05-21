@@ -13,41 +13,41 @@
       LOGIN
     </v-card-title>
     <v-card-text>
-        <v-from
-          @submit.prevent="handleClick"
+      <v-from
+        @submit.prevent="handleClick"
+      >
+        <v-text-field
+          v-model="emailValid"
+          :label="`email`"
+          counter
+          class="shrink"
+        />
+        <span>
+          {{ emailError }}
+        </span>
+        <v-text-field
+          v-model="passwordValid"
+          :label="`password`"
+          counter
+          class="shrink"
+        />
+        <span>
+          {{ passwordError }}
+        </span>
+        <v-checkbox
+          v-model="selected"
+          label="ログイン情報を保持する`"
+          color="indigo"
+          hide-details
+        ></v-checkbox>
+        <v-btn
+            color="grey"
+            class="white--text text-h6"
+            @click="handleClick"
         >
-          <v-text-field
-           v-model="emailValid"
-           :label="`email`"
-           counter
-           class="shrink"
-          />
-          <span>
-            {{ emailError }}
-          </span>
-          <v-text-field
-           v-model="passwordValid"
-           :label="`password`"
-           counter
-           class="shrink"
-          />
-          <span>
-            {{ passwordError }}
-          </span>
-          <v-checkbox
-            v-model="selected"
-            label="ログイン情報を保持する`"
-            color="indigo"
-            hide-details
-          ></v-checkbox>
-          <v-btn
-              color="grey"
-              class="white--text text-h6"
-              @click="handleClick"
-          >
-            SUBMIT
-          </v-btn>
-        </v-from>
+          SUBMIT
+        </v-btn>
+      </v-from>
     </v-card-text>
     </v-card>
   </v-row>
@@ -60,7 +60,8 @@ import * as yup from 'yup'
 import { RepositoryFactory } from '@/Repositories/RepositoryFactory'
 import { useStore } from '@/store/index'
 import * as MutationTypes from '@/store/mutationType'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import useErrorHandling from '@/Repositories/ErrorHandling'
 
 const LoginRepository = RepositoryFactory.get('login')
 
@@ -68,11 +69,15 @@ const CsrfRepository = RepositoryFactory.get('csrf')
 
 const userRepository = RepositoryFactory.get('user')
 
+const { errorHandling } = useErrorHandling()
+
 export default defineComponent({
   setup () {
     const store = useStore()
 
     const router = useRouter()
+
+    const route = useRoute()
 
     const selected = ref<boolean>(false)
 
@@ -121,8 +126,7 @@ export default defineComponent({
           /** ログイン処理実行 */
           const res = await LoginRepository.post({
             email: emailValid.value,
-            password: passwordValid.value,
-            remember: selected.value
+            password: passwordValid.value
           })
           /** ユーザー情報取得に失敗した時 */
           if (res.status !== 200 || res.statusText !== 'OK') throw Error('ログインに失敗しました。ログイン情報を確認してください。')
@@ -133,16 +137,14 @@ export default defineComponent({
           store.commit(MutationTypes.ADD_USER, {
             id: response.data.data.id,
             email: response.data.data.email,
-            name: response.data.data.name
+            name: response.data.data.name,
+            isLogin: true
           })
 
-          /** ホーム画面に遷移 */
-          router.push('/')
+          /** redirect 処理を実行 */
+          route.query.redirect === undefined ? router.push('/meets') : router.push(String(route.query.redirect))
         } catch (error: any) {
-          store.commit(MutationTypes.ADD_ALERT, {
-            hasAlert: true,
-            AlertMessage: error.message
-          })
+          errorHandling(error, store, router)
         } finally {
           store.commit(MutationTypes.SHOW_LOADER, {
             isLoading: false

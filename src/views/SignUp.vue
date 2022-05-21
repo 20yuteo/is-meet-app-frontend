@@ -52,13 +52,15 @@
           <span>
             {{ passwordConfirmationError }}
           </span>
-          <v-btn
-            color="grey"
-            class="white--text text-h6"
-            @click="handleClick"
-          >
-            SUBMIT
-          </v-btn>
+          <div>
+            <v-btn
+              color="grey"
+              class="white--text text-h6"
+              @click="handleClick"
+            >
+              SUBMIT
+            </v-btn>
+          </div>
         </v-from>
       </v-card-text>
     </v-card>
@@ -149,21 +151,22 @@ export default defineComponent({
           store.commit(MutationTypes.SHOW_LOADER, {
             isLoading: true
           })
-          /** csrfトークン発行 */
-          await CsrfRepository.index()
-          /** ログイン処理実行 */
-          const res = await RegisterRepository.post({
-            name: nameValid.value,
-            email: emailValid.value,
-            password: passwordValid.value,
-            password_confirmation: passwordConfirmation.value
-          })
+          console.log(localStorage['vue-cookie-accept-decline-myPanel1'])
+          // /** csrfトークン発行 */
+          // await CsrfRepository.index()
+          // /** ログイン処理実行 */
+          // const res = await RegisterRepository.post({
+          //   name: nameValid.value,
+          //   email: emailValid.value,
+          //   password: passwordValid.value,
+          //   password_confirmation: passwordConfirmation.value
+          // })
 
-          /** ユーザー情報取得に失敗した時 */
-          if (res.status !== 201 && res.statusText !== 'Created') throw Error('ユーザー登録が失敗しました。')
+          // /** ユーザー情報取得に失敗した時 */
+          // if (res.status !== 201 && res.statusText !== 'Created') throw Error('ユーザー登録が失敗しました。')
 
-          /** ホーム画面に遷移 */
-          router.push('/send_email')
+          // /** ホーム画面に遷移 */
+          // router.push('/send_email')
         } catch (error: any) {
           store.commit(MutationTypes.ADD_ALERT, {
             hasAlert: true,
