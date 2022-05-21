@@ -3,9 +3,10 @@ import axios from 'axios'
 const baseDomain = 'http://localhost'
 const baseURL = `${baseDomain}`
 
-const repository = axios.create({
+export const repository = axios.create({
   baseURL: baseURL,
-  withCredentials: true
+  withCredentials: true,
+  headers: { 'X-Requested-With': 'XMLHttpRequest' }
 })
 
 export default (resource: string) => {
@@ -25,6 +26,9 @@ export default (resource: string) => {
     },
     post (payload: any) {
       return repository.post(resource, payload)
+    },
+    put (payload: any) {
+      return repository.put(`${resource}/${payload.id}`, payload)
     },
     delete (id: number) {
       return repository.delete(`${resource}/${id}`)
