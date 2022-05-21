@@ -3,6 +3,7 @@ import { createStore, useStore as baseUseStore, Store } from 'vuex'
 import { User } from '../../types/User'
 import { Alert } from '../../types/Alert'
 import { Loader } from '../../types/Loader'
+import { Admin } from '../../types/Admin'
 import * as MutationTypes from './mutationType'
 import createPersistedState from 'vuex-persistedstate'
 
@@ -13,7 +14,8 @@ import createPersistedState from 'vuex-persistedstate'
 export interface State {
   user: User,
   alert: Alert,
-  loader: Loader
+  loader: Loader,
+  admin: Admin
 }
 
 /**
@@ -21,9 +23,10 @@ export interface State {
  *
  */
 const StateObject = {
-  user: { name: '', email: '', id: 0 },
+  user: { name: '', email: '', id: 0, isLogin: false },
   alert: { hasAlert: false, AlertMessage: '' },
-  loader: { isLoading: false }
+  loader: { isLoading: false },
+  admin: { name: '', email: '', id: 0, isLogin: false }
 }
 
 /** storeをprovide/injectするためのキー */
@@ -40,6 +43,9 @@ export default createStore<State>({
     },
     [MutationTypes.SHOW_LOADER] (state, loader: Loader) {
       state.loader = loader
+    },
+    [MutationTypes.ADD_ADMIN] (state, admin: Admin) {
+      state.admin = admin
     }
   },
   actions: {
@@ -47,11 +53,16 @@ export default createStore<State>({
   modules: {
   },
   getters: {
+    isLogin (state) {
+      return state.user.isLogin
+    },
+    isAdminLogin (state) {
+      return state.admin.isLogin
+    }
   },
   plugins: [createPersistedState(
     {
-      key: 'meetApp',
-      storage: window.sessionStorage
+      key: 'meetApp'
     })]
 })
 
