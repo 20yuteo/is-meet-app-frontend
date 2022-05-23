@@ -8,21 +8,18 @@
         <v-toolbar-title
           class="text-h5"
         >
-          Meet APP
+          <router-link
+            class='routerLink'
+            to="/">
+            Meet APP
+          </router-link>
         </v-toolbar-title>
-
-        <v-spacer></v-spacer>
-
-        <v-btn variant="text" icon="mdi-magnify"></v-btn>
-
-        <v-btn variant="text" icon="mdi-filter"></v-btn>
-
-        <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
+        <v-spacer/>
         <p
           v-for="(item, i) in fetchItems"
           :key="i"
         >
-          <v-btn variant="text" :icon="item.icon" :to="item.to"></v-btn>
+          <v-btn variant="text" :icon="item.icon" :to="item.link"></v-btn>
         </p>
       </v-app-bar>
 
@@ -48,21 +45,9 @@ export default defineComponent({
     const group = ref<any>(null)
     const items = [
       {
-        icon: 'mdi-view-dashboard',
-        value: 'Dashboard',
-        link: '/',
-        authStatus: AuthStatusType.ACCESSABLE
-      },
-      {
         icon: 'mdi-account-group-outline',
         value: 'Meets',
         link: '/meets',
-        authStatus: AuthStatusType.AUTHENTICATED
-      },
-      {
-        icon: 'mdi-card-account-details-outline',
-        value: 'Profile',
-        link: '/profile',
         authStatus: AuthStatusType.AUTHENTICATED
       },
       {
@@ -90,8 +75,7 @@ export default defineComponent({
 
     const fetchItems = computed(() => {
       return items.filter(function (i) {
-        return i.authStatus === AuthStatusType.ACCESSABLE ||
-          (store.state.user.id === 0 && i.authStatus === AuthStatusType.UN_AUTHENTICATED) ||
+        return (store.state.user.id === 0 && i.authStatus === AuthStatusType.UN_AUTHENTICATED) ||
           (store.state.user.id !== 0 && i.authStatus === AuthStatusType.AUTHENTICATED)
       })
     })
@@ -104,3 +88,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.routerLink{
+  text-decoration: none;
+  color: black;
+ }
+</style>
