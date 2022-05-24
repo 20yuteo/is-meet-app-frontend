@@ -1,13 +1,15 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-  >
-    <room-detail-card
-      :RoomDetail="RoomDetail"
-      @handleGoToRoom="handleGoToRoom"
-      @handleClose="handleRoomDetailClose"
-    />
-  </v-dialog>
+  <div class="text-center">
+    <v-dialog
+      v-model="dialog"
+    >
+      <room-detail-card
+        :RoomDetail="RoomDetail"
+        @handleGoToRoom="handleGoToRoom"
+        @handleClose="handleRoomDetailClose"
+      />
+    </v-dialog>
+  </div>
   <v-dialog
     v-model="newRoomDialog"
   >
@@ -44,6 +46,7 @@
               justify='center'
             >
               <v-btn
+                x-large
                 color="success"
                 class="white--text text-h6"
                 @click='newRoomDialog = !newRoomDialog'
@@ -51,70 +54,51 @@
                 ルーム作成
               </v-btn>
             </v-row>
-            <v-row
-              justify='center'
-            >
-              <v-btn
-                color="primary"
-                class="white--text text-h6"
-                @click="searchRoomDialog = true"
-              >
-                ルームに参加
-              </v-btn>
-            </v-row>
           </v-card-actions>
         </v-card>
-        <v-table>
-          <template
-            v-slot:default
-          >
-            <thead>
-              <tr>
-                <th
-                  class="text-left"
-                >
-                    ルーム 名
-                </th>
-                <th
-                  class="text-left"
-                >
-                    開始日
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-              v-for="item in roomList"
-              :key="item.name"
-              >
-              <td>{{ item.name }}</td>
-              <td>{{ item.startedAt }}</td>
-              </tr>
-            </tbody>
-          </template>
-        </v-table>
       </v-col>
     </v-row>
-  </v-container>
+    </v-container>
+    <v-container>
+      <v-row
+        no-gutters
+      >
+        <v-col
+          cols="12"
+          md="12"
+        >
+          <v-card>
+            <v-card-actions>
+              <v-row
+                justify='center'
+              >
+                <v-btn
+                  x-large
+                  color="primary"
+                  class="white--text text-h6"
+                  @click="searchRoomDialog = true"
+                >
+                  ルームに参加
+                </v-btn>
+              </v-row>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, computed } from 'vue'
+import { defineComponent, ref, reactive } from 'vue'
 import { useStore } from '@/store/index'
 import * as MutationTypes from '@/store/mutationType'
 import { RepositoryFactory } from '@/Repositories/RepositoryFactory'
 import useErrorHandling from '@/Repositories/ErrorHandling'
 import { useRouter, useRoute } from 'vue-router'
-import useCopyToClipBoard from '@/services/copyToClipBoard'
 import RoomDetailCard, { RoomDetailType } from '@/components/organisms/RoomDetailCard.vue'
 import RoomCard from '@/components/organisms/RoomCard.vue'
 
 const RoomRepository = RepositoryFactory.get('room')
-
-type roomType ={
-  name: string,
-  startedAt: Date
-}
 
 export default defineComponent({
 
@@ -130,10 +114,6 @@ export default defineComponent({
 
     const route = useRoute()
 
-    const roomName = ref<string>('')
-
-    const roomNameError = ref<string | undefined>(undefined)
-
     const dialog = ref<boolean>(false)
 
     const newRoomDialog = ref<boolean>(false)
@@ -145,8 +125,6 @@ export default defineComponent({
       token: '',
       inviteUrl: ''
     })
-
-    const { copyToClipBoard } = useCopyToClipBoard()
 
     const { errorHandling } = useErrorHandling()
 
@@ -213,14 +191,6 @@ export default defineComponent({
         const res = await RoomRepository.get({ token: value })
 
         /** ルーム画面に遷移 */
-        // router.push({
-        //   path: 'room',
-        //   query: {
-        //     name: res.data.data.name,
-        //     token: res.data.data.token,
-        //     isCalling: 'true'
-        //   }
-        // })
         handleGoToRoom(res.data.data.name, res.data.data.token)
       } catch (error: any) {
         console.log(error)
@@ -257,34 +227,11 @@ export default defineComponent({
       })
     }
 
-    const roomList = ref<roomType[]>([])
-
-    /**
-     * fetch own meet history.
-     *
-     */
-    const fetchOwnMeetHistory = async (userId: any) => {
-      const res = await RoomRepository.index(userId)
-      const list = res.data.data.map((room: any) => {
-        const date = new Date(room.created_at)
-
-        return {
-          name: room.name,
-          startedAt: date.getFullYear() + '/' + date.getMonth() + '/' + date.getDate()
-        }
-      })
-      roomList.value.push(list[0])
-      console.log({ roomList })
-    }
-
     const initialize = async () => {
       try {
         store.commit(MutationTypes.SHOW_LOADER, {
           isLoading: true
         })
-        const userId = store.state.user.id as number
-        await fetchOwnMeetHistory(userId)
-
         if (route.query.token === undefined) return
         const token = String(route.query.token)
         const res = await RoomRepository.get({
@@ -311,7 +258,6 @@ export default defineComponent({
     initialize()
 
     return {
-      roomList,
       handleSubmit,
       handleClose,
       dialog,
