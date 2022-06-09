@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseDomain = 'http://localhost'
+const baseDomain = process.env.VUE_APP_BASE_URL
 const baseURL = `${baseDomain}`
 
 export const repository = axios.create({
