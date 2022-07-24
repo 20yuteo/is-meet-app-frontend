@@ -9,6 +9,7 @@ export const repository = axios.create({
   headers: {
     'Content-Type': 'application/json;charset=utf-8',
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
     'X-Requested-With': 'XMLHttpRequest'
   }
 })
