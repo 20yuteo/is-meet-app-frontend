@@ -6,7 +6,11 @@ const baseURL = `${baseDomain}`
 export const repository = axios.create({
   baseURL: baseURL,
   withCredentials: true,
-  headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  headers: {
+    'Content-Type': 'application/json;charset=utf-8',
+    'Access-Control-Allow-Origin': '*',
+    'X-Requested-With': 'XMLHttpRequest'
+  }
 })
 
 export default (resource: string) => {
